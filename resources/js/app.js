@@ -1,13 +1,14 @@
 import '../css/app.css';
-import { createInertiaApp } from '@inertiajs/vue3'
+import { createInertiaApp, Head, Link } from '@inertiajs/vue3'
 
 createInertiaApp({
-    withApp(app) {
-        // app.use(SomePlugin)
-    },
-    pages: {
-        path: './Pages',
-        resolve: (name) => import(`./Pages/${name}.vue`),
-        lazy: true
-    }
+  title: (title) => (title ? `${title} - Open Case` : 'Open Case'),
+  withApp(app) {
+    app.component('Head', Head)
+    app.component('Link', Link)
+  },
+  pages: {
+    path: './Pages',
+    lazy: true,
+  },
 })

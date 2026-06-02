@@ -13,7 +13,13 @@ return new class extends Migration
     {
         Schema::create('case_notes', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tax_case_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->text('note');
+            $table->string('visibility')->default('internal');
             $table->timestamps();
+
+            $table->index(['tax_case_id', 'visibility']);
         });
     }
 

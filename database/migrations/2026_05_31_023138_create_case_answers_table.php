@@ -13,7 +13,12 @@ return new class extends Migration
     {
         Schema::create('case_answers', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tax_case_id')->constrained()->cascadeOnDelete();
+            $table->string('question_key');
+            $table->json('answer_value')->nullable();
             $table->timestamps();
+
+            $table->unique(['tax_case_id', 'question_key']);
         });
     }
 
