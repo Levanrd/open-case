@@ -157,7 +157,6 @@ class CaseController extends Controller
                 'result',
                 'documents.requester',
                 'checklistItems',
-                'notes.user',
                 'latestPayment.servicePackage',
                 'assignedAccountant',
             ]),
