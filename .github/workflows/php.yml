@@ -1,0 +1,54 @@
+name: PHP CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  php:
+    name: PHP ${{ matrix.check }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        check: [tests, formatting]
+    env:
+      APP_ENV: testing
+    steps:
+      - name: Check out source
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@d52fc211a0436f8839a587b3b5b8efddab4744ea # v2
+        with:
+          php-version: '8.5'
+          extensions: mbstring, dom, xml, curl, fileinfo, pdo_sqlite, sqlite3, zip, exif
+          tools: composer:v2
+          coverage: none
+
+      - name: Install locked dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Generate an ephemeral test key
+        if: matrix.check == 'tests'
+        run: echo "APP_KEY=$(php artisan key:generate --show)" >> "$GITHUB_ENV"
+
+      - name: Run PHP tests
+        if: matrix.check == 'tests'
+        run: composer test
+
+      - name: Check PHP formatting
+        if: matrix.check == 'formatting'
+        run: vendor/bin/pint --test

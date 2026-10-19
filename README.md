@@ -48,3 +48,27 @@ php artisan test
 npm run build
 vendor/bin/pint
 ```
+
+## Pull request checks
+
+The [PHP CI workflow](.github/workflows/php.yml) runs on every pull request,
+pushes to master, and manual dispatch. It exposes two independent checks:
+**PHP tests** and **PHP formatting**.
+
+Both jobs use PHP 8.5 on Ubuntu 24.04 and install the versions in composer.lock.
+The test job generates a temporary application key and uses phpunit.xml's
+in-memory SQLite database and array-backed test services. No repository secrets,
+external database, frontend build or production environment file is required.
+The formatting job checks the whole PHP codebase with Pint without modifying it.
+
+To reproduce locally after installing dependencies, provide a local application
+key (or generate one in your local .env), then run:
+
+```bash
+composer test
+vendor/bin/pint --test
+```
+
+To fix formatting locally, run `vendor/bin/pint` and review the diff.
+Branch protection is configured separately in GitHub; this workflow does not
+make its checks mandatory for merging.
